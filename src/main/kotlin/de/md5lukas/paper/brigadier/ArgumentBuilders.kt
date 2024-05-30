@@ -9,7 +9,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.command.brigadier.argument.VanillaArgumentTypes
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.registry.RegistryKey
 
 @BrigadierDSL
 inline fun command(
@@ -26,7 +27,7 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.literal(
 }
 
 @BrigadierDSL
-inline fun <reified T> ArgumentBuilder<CommandSourceStack, *>.argument(
+inline fun <T> ArgumentBuilder<CommandSourceStack, *>.argument(
     name: String,
     type: ArgumentType<T>,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
@@ -89,67 +90,178 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.double(
 ) = argument(name, DoubleArgumentType.doubleArg(min, max), block)
 
 @BrigadierDSL
-inline fun ArgumentBuilder<CommandSourceStack, *>.itemStack(
-    name: String,
-    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.itemStack(), block)
-
-@BrigadierDSL
-inline fun ArgumentBuilder<CommandSourceStack, *>.blockState(
-    name: String,
-    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.blockState(), block)
-
-@BrigadierDSL
-inline fun ArgumentBuilder<CommandSourceStack, *>.uuid(
-    name: String,
-    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.uuid(), block)
-
-@BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.entity(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.entity(), block)
+) = argument(name, ArgumentTypes.entity(), block)
 
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.entities(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.entities(), block)
+) = argument(name, ArgumentTypes.entities(), block)
 
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.player(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.player(), block)
+) = argument(name, ArgumentTypes.player(), block)
 
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.players(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.players(), block)
+) = argument(name, ArgumentTypes.players(), block)
 
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.playerProfiles(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.playerProfiles(), block)
+) = argument(name, ArgumentTypes.playerProfiles(), block)
 
 @BrigadierDSL
-inline fun ArgumentBuilder<CommandSourceStack, *>.blockPos(
+inline fun ArgumentBuilder<CommandSourceStack, *>.blockPosition(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.blockPos(), block)
+) = argument(name, ArgumentTypes.blockPosition(), block)
 
 @BrigadierDSL
-inline fun ArgumentBuilder<CommandSourceStack, *>.signedMessage(
+inline fun ArgumentBuilder<CommandSourceStack, *>.blockState(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.signedMessage(), block)
+) = argument(name, ArgumentTypes.blockState(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.itemStack(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.itemStack(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.itemPredicate(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.itemPredicate(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.namedColor(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.namedColor(), block)
 
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.component(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
-) = argument(name, VanillaArgumentTypes.component(), block)
+) = argument(name, ArgumentTypes.component(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.style(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.style(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.signedMessage(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.signedMessage(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.scoreboardDisplaySlot(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.scoreboardDisplaySlot(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.namespacedKey(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.namespacedKey(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.key(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.key(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.integerRange(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.integerRange(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.doubleRange(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.doubleRange(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.world(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.world(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.gameMode(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.gameMode(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.heightMap(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.heightMap(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.uuid(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.uuid(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.objectiveCriteria(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.objectiveCriteria(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.entityAnchor(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.entityAnchor(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.time(
+    name: String,
+    mintime: Int = 0,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.time(mintime), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.templateMirror(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.templateMirror(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.templateRotation(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.templateRotation(), block)
+
+@BrigadierDSL
+inline fun <T> ArgumentBuilder<CommandSourceStack, *>.resource(
+    name: String,
+    registryKey: RegistryKey<T>,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.resource(registryKey), block)
+
+@BrigadierDSL
+inline fun <T> ArgumentBuilder<CommandSourceStack, *>.resourceKey(
+    name: String,
+    registryKey: RegistryKey<T>,
+    block: RequiredArgumentBuilder<CommandSourceStack, *>.() -> Unit,
+) = argument(name, ArgumentTypes.resourceKey(registryKey), block)
