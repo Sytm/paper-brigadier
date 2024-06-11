@@ -10,22 +10,7 @@ import java.util.concurrent.CompletableFuture
 import kotlin.collections.forEach
 import kotlin.text.startsWith
 import net.kyori.adventure.text.Component
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-
-/**
- * Class containing basic information relevant for the creation of suggestions.
- *
- * @property sender The user that is entering the command
- * @property currentArgument The text that the user has already entered for the current argument
- * @property fullInput The entire command that the user as already entered
- */
-data class SuggestionInfo
-internal constructor(
-    val sender: CommandSender,
-    val currentArgument: String,
-    val fullInput: String,
-)
 
 /**
  * Different suggestion providers to be used with
@@ -52,7 +37,7 @@ object SuggestionProviders {
    */
   fun static(vararg strings: String) =
       SuggestionProvider<CommandSourceStack> { _, builder ->
-        strings.forEach(builder::suggestIfApplicable)
+        strings.forEach { builder.suggestIfApplicable(it) }
         builder.buildFuture()
       }
 
@@ -64,7 +49,7 @@ object SuggestionProviders {
    */
   fun static(strings: Iterable<String>) =
       SuggestionProvider<CommandSourceStack> { _, builder ->
-        strings.forEach(builder::suggestIfApplicable)
+        strings.forEach { builder.suggestIfApplicable(it) }
         builder.buildFuture()
       }
 
@@ -78,7 +63,7 @@ object SuggestionProviders {
    */
   fun static(vararg strings: Pair<String, Component>) =
       SuggestionProvider<CommandSourceStack> { _, builder ->
-        strings.forEach(builder::suggestIfApplicable)
+        strings.forEach { builder.suggestIfApplicable(it) }
         builder.buildFuture()
       }
 
@@ -93,7 +78,7 @@ object SuggestionProviders {
   @JvmName("staticWithTooltips")
   fun static(strings: Iterable<Pair<String, Component>>) =
       SuggestionProvider<CommandSourceStack> { _, builder ->
-        strings.forEach(builder::suggestIfApplicable)
+        strings.forEach { builder.suggestIfApplicable(it) }
         builder.buildFuture()
       }
 
@@ -106,7 +91,7 @@ object SuggestionProviders {
   fun dynamic(suggestions: (SuggestionInfo) -> Iterable<String>) =
       SuggestionProvider<CommandSourceStack> { context, builder ->
         suggestions(SuggestionInfo(context.source.sender, builder.remaining, builder.input))
-            .forEach(builder::suggestIfApplicable)
+            .forEach { builder.suggestIfApplicable(it) }
         builder.buildFuture()
       }
 
@@ -121,7 +106,7 @@ object SuggestionProviders {
       SuggestionProvider<CommandSourceStack> { context, builder ->
         suggestions(SuggestionInfo(context.source.sender, builder.remaining, builder.input))
             .thenApply {
-              it.forEach(builder::suggestIfApplicable)
+              it.forEach { builder.suggestIfApplicable(it) }
               builder.build()
             }
       }
@@ -138,7 +123,7 @@ object SuggestionProviders {
   fun dynamic(suggestions: (SuggestionInfo) -> Iterable<Pair<String, Component>>) =
       SuggestionProvider<CommandSourceStack> { context, builder ->
         suggestions(SuggestionInfo(context.source.sender, builder.remaining, builder.input))
-            .forEach(builder::suggestIfApplicable)
+            .forEach { builder.suggestIfApplicable(it) }
         builder.buildFuture()
       }
 
@@ -159,7 +144,7 @@ object SuggestionProviders {
       SuggestionProvider<CommandSourceStack> { context, builder ->
         suggestions(SuggestionInfo(context.source.sender, builder.remaining, builder.input))
             .thenApply {
-              it.forEach(builder::suggestIfApplicable)
+              it.forEach { builder.suggestIfApplicable(it) }
               builder.build()
             }
       }
@@ -186,23 +171,23 @@ object SuggestionProviders {
 
         builder.buildFuture()
       }
-}
 
-private fun SuggestionsBuilder.shouldSuggest(suggestion: String) =
-    suggestion.startsWith(remaining, ignoreCase = true)
+  private fun SuggestionsBuilder.shouldSuggest(suggestion: String) =
+      suggestion.startsWith(remaining, ignoreCase = true)
 
-private fun SuggestionsBuilder.suggestIfApplicable(suggestion: String) {
-  if (shouldSuggest(suggestion)) {
-    suggest(suggestion)
+  private fun SuggestionsBuilder.suggestIfApplicable(suggestion: String) {
+    if (shouldSuggest(suggestion)) {
+      suggest(suggestion)
+    }
   }
-}
 
-private fun SuggestionsBuilder.suggestIfApplicable(suggestion: Pair<String, Component>) {
-  if (shouldSuggest(suggestion.first)) {
-    if (Component.empty() === suggestion.second) {
-      suggest(suggestion.first)
-    } else {
-      suggest(suggestion.first, MessageComponentSerializer.message().serialize(suggestion.second))
+  private fun SuggestionsBuilder.suggestIfApplicable(suggestion: Pair<String, Component>) {
+    if (shouldSuggest(suggestion.first)) {
+      if (Component.empty() === suggestion.second) {
+        suggest(suggestion.first)
+      } else {
+        suggest(suggestion.first, MessageComponentSerializer.message().serialize(suggestion.second))
+      }
     }
   }
 }
