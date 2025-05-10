@@ -1,5 +1,3 @@
-import org.jetbrains.dokka.gradle.DokkaTask
-
 plugins {
   with(libs.plugins) {
     alias(kotlin)
@@ -35,30 +33,33 @@ tasks {
 
 spotless { kotlin { ktfmt() } }
 
-val sourcesJar by tasks.creating(Jar::class) {
+val sourcesJar by tasks.registering(Jar::class) {
   archiveClassifier.set("sources")
   from(sourceSets.main.get().allSource)
 }
 
-val dokkaHtml by tasks.getting(DokkaTask::class) {
-  dokkaSourceSets {
-    configureEach {
-      includes.from("README.md")
-      val version = libs.versions.paper.get().substringBefore("-")
-      externalDocumentationLink(
-        "https://jd.papermc.io/paper/$version/",
-        "https://jd.papermc.io/paper/$version/element-list")
-      externalDocumentationLink(
-        "https://jd.advntr.dev/api/4.17.0/",
-        "https://jd.advntr.dev/api/4.17.0/element-list")
+dokka {
+  val version = libs.versions.paper.get().substringBefore("-")
+  dokkaSourceSets.configureEach {
+    externalDocumentationLinks {
+      register("paper-docs") {
+        url("https://jd.papermc.io/paper/$version/")
+        packageListUrl("https://jd.papermc.io/paper/$version/element-list")
+      }
+      register("adventure-docs") {
+        url("https://jd.advntr.dev/api/4.17.0/")
+        packageListUrl("https://jd.advntr.dev/api/4.17.0/element-list")
+      }
     }
+  }
+  dokkaPublications.html {
+    includes.from(project.layout.projectDirectory.file("README.md"))
   }
 }
 
-val javadocJar by tasks.creating(Jar::class) {
-  dependsOn(tasks.dokkaHtml)
+val javadocJar by tasks.registering(Jar::class) {
   archiveClassifier.set("javadoc")
-  from(tasks.dokkaHtml)
+  from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
 }
 
 publishing {

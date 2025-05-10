@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.0.0"
+kotlin = "2.1.20"
 jvmToolchain = "21"
 paper = "1.20.6-R0.1-SNAPSHOT"
 
@@ -10,5 +10,5 @@ paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" 
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version = "1.+" }
+dokka = { id = "org.jetbrains.dokka", version = "2.+" }
 spotless = { id = "com.diffplug.spotless", version = "6.+" }
