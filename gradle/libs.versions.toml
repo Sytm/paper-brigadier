@@ -1,7 +1,7 @@
 [versions]
-kotlin = "2.1.20"
+kotlin = "2.2.10"
 jvmToolchain = "21"
-paper = "1.20.6-R0.1-SNAPSHOT"
+paper = "1.21.8-R0.1-SNAPSHOT"
 
 [libraries]
 stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }

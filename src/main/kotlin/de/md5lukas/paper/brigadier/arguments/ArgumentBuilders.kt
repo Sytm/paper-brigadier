@@ -1,8 +1,14 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "unused")
 
 package de.md5lukas.paper.brigadier.arguments
 
-import com.mojang.brigadier.arguments.*
+import com.mojang.brigadier.arguments.ArgumentType
+import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.DoubleArgumentType
+import com.mojang.brigadier.arguments.FloatArgumentType
+import com.mojang.brigadier.arguments.IntegerArgumentType
+import com.mojang.brigadier.arguments.LongArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
@@ -11,12 +17,19 @@ import de.md5lukas.paper.brigadier.BrigadierDSL
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.AxisSet
 import io.papermc.paper.command.brigadier.argument.SignedMessageResolver
+import io.papermc.paper.command.brigadier.argument.predicate.BlockInWorldPredicate
 import io.papermc.paper.command.brigadier.argument.predicate.ItemStackPredicate
 import io.papermc.paper.command.brigadier.argument.range.DoubleRangeProvider
 import io.papermc.paper.command.brigadier.argument.range.IntegerRangeProvider
+import io.papermc.paper.command.brigadier.argument.resolvers.AngleResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.ColumnBlockPositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.ColumnFinePositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.RotationResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import io.papermc.paper.entity.LookAnchor
@@ -27,6 +40,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.GameMode
 import org.bukkit.HeightMap
 import org.bukkit.NamespacedKey
@@ -61,8 +75,10 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.literal(
   then(Commands.literal(name).also(block))
 }
 
+// Brigadier integrated types
+
 @BrigadierDSL
-inline fun <T> ArgumentBuilder<CommandSourceStack, *>.argument(
+inline fun <T : Any> ArgumentBuilder<CommandSourceStack, *>.argument(
     name: String,
     type: ArgumentType<T>,
     block: RequiredArgumentBuilder<CommandSourceStack, T>.() -> Unit,
@@ -124,6 +140,8 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.double(
     block: RequiredArgumentBuilder<CommandSourceStack, Double>.() -> Unit,
 ) = argument(name, DoubleArgumentType.doubleArg(min, max), block)
 
+// Minecraft types
+
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.entity(
     name: String,
@@ -161,6 +179,50 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.blockPosition(
 ) = argument(name, ArgumentTypes.blockPosition(), block)
 
 @BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.columnBlockPosition(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, ColumnBlockPositionResolver>.() -> Unit,
+) = argument(name, ArgumentTypes.columnBlockPosition(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.blockInWorldPredicate(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, BlockInWorldPredicate>.() -> Unit,
+) = argument(name, ArgumentTypes.blockInWorldPredicate(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.finePosition(
+    name: String,
+    centerIntegers: Boolean = false,
+    block: RequiredArgumentBuilder<CommandSourceStack, FinePositionResolver>.() -> Unit,
+) = argument(name, ArgumentTypes.finePosition(centerIntegers), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.columnFinePosition(
+    name: String,
+    centerIntegers: Boolean = false,
+    block: RequiredArgumentBuilder<CommandSourceStack, ColumnFinePositionResolver>.() -> Unit,
+) = argument(name, ArgumentTypes.columnFinePosition(centerIntegers), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.rotation(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, RotationResolver>.() -> Unit,
+) = argument(name, ArgumentTypes.rotation(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.angle(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, AngleResolver>.() -> Unit,
+) = argument(name, ArgumentTypes.angle(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.axes(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, AxisSet>.() -> Unit,
+) = argument(name, ArgumentTypes.axes(), block)
+
+@BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.blockState(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, BlockState>.() -> Unit,
@@ -183,6 +245,12 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.namedColor(
     name: String,
     block: RequiredArgumentBuilder<CommandSourceStack, NamedTextColor>.() -> Unit,
 ) = argument(name, ArgumentTypes.namedColor(), block)
+
+@BrigadierDSL
+inline fun ArgumentBuilder<CommandSourceStack, *>.hexColor(
+    name: String,
+    block: RequiredArgumentBuilder<CommandSourceStack, TextColor>.() -> Unit,
+) = argument(name, ArgumentTypes.hexColor(), block)
 
 @BrigadierDSL
 inline fun ArgumentBuilder<CommandSourceStack, *>.component(
@@ -288,14 +356,14 @@ inline fun ArgumentBuilder<CommandSourceStack, *>.templateRotation(
 ) = argument(name, ArgumentTypes.templateRotation(), block)
 
 @BrigadierDSL
-inline fun <T> ArgumentBuilder<CommandSourceStack, *>.resource(
+inline fun <T : Any> ArgumentBuilder<CommandSourceStack, *>.resource(
     name: String,
     registryKey: RegistryKey<T>,
     block: RequiredArgumentBuilder<CommandSourceStack, T>.() -> Unit,
 ) = argument(name, ArgumentTypes.resource(registryKey), block)
 
 @BrigadierDSL
-inline fun <T> ArgumentBuilder<CommandSourceStack, *>.resourceKey(
+inline fun <T : Any> ArgumentBuilder<CommandSourceStack, *>.resourceKey(
     name: String,
     registryKey: RegistryKey<T>,
     block: RequiredArgumentBuilder<CommandSourceStack, TypedKey<T>>.() -> Unit,

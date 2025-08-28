@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("unused")
 
 package de.md5lukas.paper.brigadier.suggestions
 
@@ -106,7 +106,7 @@ object SuggestionProviders {
       SuggestionProvider<CommandSourceStack> { context, builder ->
         suggestions(SuggestionInfo(context.source.sender, builder.remaining, builder.input))
             .thenApply {
-              it.forEach { builder.suggestIfApplicable(it) }
+              it.forEach { suggestion -> builder.suggestIfApplicable(suggestion) }
               builder.build()
             }
       }
@@ -144,7 +144,7 @@ object SuggestionProviders {
       SuggestionProvider<CommandSourceStack> { context, builder ->
         suggestions(SuggestionInfo(context.source.sender, builder.remaining, builder.input))
             .thenApply {
-              it.forEach { builder.suggestIfApplicable(it) }
+              it.forEach { suggestion -> builder.suggestIfApplicable(suggestion) }
               builder.build()
             }
       }

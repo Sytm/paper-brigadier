@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "unused")
 
 package de.md5lukas.paper.brigadier.executors
 
@@ -6,14 +6,26 @@ import com.destroystokyo.paper.profile.PlayerProfile
 import com.google.common.collect.Range
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.argument.SignedMessageResolver
+import io.papermc.paper.command.brigadier.argument.position.ColumnBlockPosition
+import io.papermc.paper.command.brigadier.argument.position.ColumnFinePosition
 import io.papermc.paper.command.brigadier.argument.range.DoubleRangeProvider
 import io.papermc.paper.command.brigadier.argument.range.IntegerRangeProvider
+import io.papermc.paper.command.brigadier.argument.resolvers.AngleResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.ColumnBlockPositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.ColumnFinePositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.FinePositionResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.RotationResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import io.papermc.paper.math.BlockPosition
+import io.papermc.paper.math.FinePosition
+import io.papermc.paper.math.Rotation
 import io.papermc.paper.registry.TypedKey
+import java.util.concurrent.CompletableFuture
+import net.kyori.adventure.chat.SignedMessage
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
@@ -87,6 +99,68 @@ fun CommandContext<CommandSourceStack>.getPlayerProfiles(name: String): Collecti
 fun CommandContext<CommandSourceStack>.getBlockPosition(name: String): BlockPosition =
     this.getArgument(name, BlockPositionResolver::class.java).resolve(source)
 
+/**
+ * Gets an argument value from the CommandContext that has been created with
+ * [columnBlockPosition("name") { ... }][de.md5lukas.paper.brigadier.arguments.columnBlockPosition].
+ *
+ * @param name The name of the argument
+ * @return The value of the argument
+ */
+fun CommandContext<CommandSourceStack>.getColumnBlockPosition(name: String): ColumnBlockPosition =
+    this.getArgument(name, ColumnBlockPositionResolver::class.java).resolve(source)
+
+/**
+ * Gets an argument value from the CommandContext that has been created with
+ * [finePosition("name") { ... }][de.md5lukas.paper.brigadier.arguments.finePosition].
+ *
+ * @param name The name of the argument
+ * @return The value of the argument
+ */
+fun CommandContext<CommandSourceStack>.getFinePosition(name: String): FinePosition =
+    this.getArgument(name, FinePositionResolver::class.java).resolve(source)
+
+/**
+ * Gets an argument value from the CommandContext that has been created with
+ * [columnFinePosition("name") { ... }][de.md5lukas.paper.brigadier.arguments.columnFinePosition].
+ *
+ * @param name The name of the argument
+ * @return The value of the argument
+ */
+fun CommandContext<CommandSourceStack>.getColumnFinePosition(name: String): ColumnFinePosition =
+    this.getArgument(name, ColumnFinePositionResolver::class.java).resolve(source)
+
+/**
+ * Gets an argument value from the CommandContext that has been created with
+ * [rotation("name") { ... }][de.md5lukas.paper.brigadier.arguments.rotation].
+ *
+ * @param name The name of the argument
+ * @return The value of the argument
+ */
+fun CommandContext<CommandSourceStack>.getRotation(name: String): Rotation =
+    this.getArgument(name, RotationResolver::class.java).resolve(source)
+
+/**
+ * Gets an argument value from the CommandContext that has been created with
+ * [angle("name") { ... }][de.md5lukas.paper.brigadier.arguments.angle].
+ *
+ * @param name The name of the argument
+ * @return The value of the argument
+ */
+fun CommandContext<CommandSourceStack>.getAngle(name: String): Float =
+    this.getArgument(name, AngleResolver::class.java).resolve(source)
+
+/**
+ * Gets an argument value from the CommandContext that has been created with
+ * [signedMessage("name") { ... }][de.md5lukas.paper.brigadier.arguments.signedMessage].
+ *
+ * @param name The name of the argument
+ * @return The value of the argument
+ */
+fun CommandContext<CommandSourceStack>.getSignedMessage(
+    name: String
+): CompletableFuture<SignedMessage> =
+    this.getArgument(name, SignedMessageResolver::class.java).resolveSignedMessage(name, this)
+
 // Other special arguments
 
 /**
@@ -97,7 +171,7 @@ fun CommandContext<CommandSourceStack>.getBlockPosition(name: String): BlockPosi
  * @return The value of the argument
  */
 @Suppress("UNCHECKED_CAST")
-fun <T> CommandContext<CommandSourceStack>.getResourceKey(name: String): TypedKey<T> =
+fun <T : Any> CommandContext<CommandSourceStack>.getResourceKey(name: String): TypedKey<T> =
     this.getArgument(name, TypedKey::class.java) as TypedKey<T>
 
 /**

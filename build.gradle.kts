@@ -19,24 +19,24 @@ dependencies {
   implementation(libs.stdlib)
 }
 
-kotlin {
-  jvmToolchain(libs.versions.jvmToolchain.get().toInt())
-}
+kotlin { jvmToolchain(libs.versions.jvmToolchain.get().toInt()) }
 
 tasks {
   compileKotlin {
     compilerOptions.freeCompilerArgs.addAll(
         "-Xjvm-default=all",
+        "-Xconsistent-data-class-copy-visibility",
     )
   }
 }
 
 spotless { kotlin { ktfmt() } }
 
-val sourcesJar by tasks.registering(Jar::class) {
-  archiveClassifier.set("sources")
-  from(sourceSets.main.get().allSource)
-}
+val sourcesJar by
+    tasks.registering(Jar::class) {
+      archiveClassifier.set("sources")
+      from(sourceSets.main.get().allSource)
+    }
 
 dokka {
   val version = libs.versions.paper.get().substringBefore("-")
@@ -52,31 +52,31 @@ dokka {
       }
     }
   }
-  dokkaPublications.html {
-    includes.from(project.layout.projectDirectory.file("README.md"))
-  }
+  dokkaPublications.html { includes.from(project.layout.projectDirectory.file("README.md")) }
 }
 
-val javadocJar by tasks.registering(Jar::class) {
-  archiveClassifier.set("javadoc")
-  from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
-}
+val javadocJar by
+    tasks.registering(Jar::class) {
+      archiveClassifier.set("javadoc")
+      from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
+    }
 
 publishing {
   repositories {
     maven {
       name = "md5lukasReposilite"
 
-      url = uri("https://repo.md5lukas.de/${if (version.toString().endsWith("-SNAPSHOT")) {
+      url =
+          uri(
+              "https://repo.md5lukas.de/${if (version.toString().endsWith("-SNAPSHOT")) {
         "snapshots"
       } else {
         "releases"
-      }}")
+      }}"
+          )
 
       credentials(PasswordCredentials::class)
-      authentication {
-        create<BasicAuthentication>("basic")
-      }
+      authentication { create<BasicAuthentication>("basic") }
     }
   }
   publications {
